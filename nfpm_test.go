@@ -86,6 +86,8 @@ func TestDefaults(t *testing.T) {
 		Platform:    "darwin",
 		Version:     "2.4.1",
 		Description: "no description given",
+		Owner:       "root",
+		Group:       "root",
 	}
 	got := WithDefaults(info)
 	assert.Equal(t, info, got)
@@ -144,8 +146,11 @@ func TestParseFile(t *testing.T) {
 	assert.Error(t, err)
 	Register("deb", &fakePackager{})
 	Register("rpm", &fakePackager{})
-	_, err = ParseFile("./testdata/overrides.yaml")
+	overrideConfig, err := ParseFile("./testdata/overrides.yaml")
 	assert.NoError(t, err)
+	assert.Equal(t, overrideConfig.Owner, "user1")
+	assert.Equal(t, overrideConfig.Group, "group1")
+	
 	_, err = ParseFile("./testdata/doesnotexist.yaml")
 	assert.Error(t, err)
 	config, err := ParseFile("./testdata/versionenv.yaml")
@@ -159,7 +164,6 @@ func TestOverrides(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "foo", config.Name)
 	assert.Equal(t, "amd64", config.Arch)
-
 	// deb overrides
 	deb, err := config.Get("deb")
 	assert.NoError(t, err)

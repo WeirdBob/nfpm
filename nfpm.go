@@ -137,6 +137,8 @@ type Info struct {
 	License      string `yaml:"license,omitempty"`
 	Bindir       string `yaml:"bindir,omitempty"` // Deprecated: this does nothing. TODO: remove.
 	Target       string `yaml:"-"`
+	Owner        string `yaml:"owner,omitempty"`
+	Group        string `yaml:"group,omitempty"`
 }
 
 // Overridables contain the field which are overridable in a package.
@@ -213,6 +215,12 @@ func WithDefaults(info *Info) *Info {
 	}
 	if info.Description == "" {
 		info.Description = "no description given"
+	}
+	if info.Owner == "" {
+		info.Owner = "root"
+	}
+	if info.Group == "" {
+		info.Group = "root"
 	}
 
 	// parse the version as a semver so we can properly split the parts

@@ -37,6 +37,8 @@ func exampleInfo() *nfpm.Info {
 		Homepage:    "http://carlosbecker.com",
 		Vendor:      "nope",
 		License:     "MIT",
+		Owner:       "user1",
+		Group:       "group1",
 		Overridables: nfpm.Overridables{
 			Depends: []string{
 				"bash",
@@ -117,6 +119,12 @@ func TestRPM(t *testing.T) {
 	description, err := rpm.Header.GetString(tagDescription)
 	assert.NoError(t, err)
 	assert.Equal(t, "Foo does things", description)
+	files, _ := rpm.Header.GetFiles()
+	fmt.Printf("fileInfo : %v\n", files[0])
+	assert.Equal(t, files[0].UserName(), "user1")
+	assert.Equal(t, files[0].GroupName(), "group1")
+
+
 }
 
 func TestWithRPMTags(t *testing.T) {

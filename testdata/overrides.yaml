@@ -6,6 +6,8 @@ config_files:
   whatever.conf: "/etc/foo/whatever.conf"
 rpm:
   group: foo
+owner: user1
+group: group1
 overrides:
   deb:
     depends:

@@ -207,8 +207,8 @@ func addEmptyDirsRPM(info *nfpm.Info, rpm *rpmpack.RPM) {
 				Name:  dir,
 				Mode:  uint(040755),
 				MTime: uint32(time.Now().Unix()),
-				Owner: "root",
-				Group: "root",
+				Owner: info.Owner,
+				Group: info.Group,
 			},
 		)
 	}
@@ -220,7 +220,7 @@ func createFilesInsideRPM(info *nfpm.Info, rpm *rpmpack.RPM) error {
 		return err
 	}
 	for _, file := range files {
-		err := copyToRPM(rpm, file.Source, file.Destination, file.Config)
+		err := copyToRPM(rpm, file.Source, file.Destination, file.Config, info.Owner, info.Group)
 		if err != nil {
 			return err
 		}
@@ -228,7 +228,7 @@ func createFilesInsideRPM(info *nfpm.Info, rpm *rpmpack.RPM) error {
 	return nil
 }
 
-func copyToRPM(rpm *rpmpack.RPM, src, dst string, config bool) error {
+func copyToRPM(rpm *rpmpack.RPM, src, dst string, config bool, owner, group string) error {
 	file, err := os.OpenFile(src, os.O_RDONLY, 0600) //nolint:gosec
 	if err != nil {
 		return errors.Wrap(err, "could not add file to the archive")
@@ -247,14 +247,14 @@ func copyToRPM(rpm *rpmpack.RPM, src, dst string, config bool) error {
 	if err != nil {
 		return err
 	}
-
+	fmt.Printf("Adding file with owner %s and group %s \n", owner, group)
 	rpmFile := rpmpack.RPMFile{
 		Name:  dst,
 		Body:  data,
 		Mode:  uint(info.Mode()),
 		MTime: uint32(info.ModTime().Unix()),
-		Owner: "root",
-		Group: "root",
+		Owner: owner,
+		Group: group,
 	}
 
 	if config {
